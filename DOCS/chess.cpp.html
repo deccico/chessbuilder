@@ -1,0 +1,356 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win95; I) [Netscape]">
+   <title>TP Ajedrez - Deccico - Fontdevila - Grupo 14</title>
+</head>
+<body>
+&nbsp;
+<br>#pragma hdrstop
+<br>#include &lt;condefs.h>
+<br>&nbsp;
+<p>//---------------------------------------------------------------------------
+<br>USEUNIT("tablero.cpp");
+<br>USEUNIT("ejercito.cpp");
+<br>USEUNIT("partida.cpp");
+<br>USEUNIT("pieza.cpp");
+<br>USEUNIT("str.cpp");
+<br>USEUNIT("chess.cpp");
+<br>//---------------------------------------------------------------------------
+<br>#pragma argsused
+<br>//Programa Ajedrez
+<br>//Archivo: ajedrez.cpp&nbsp;&nbsp; (archivo principal)
+<br>/**********************************************************************
+<br>Materia: Algoritmos y Programaci&cent;n III&nbsp;&nbsp; 7507&nbsp;
+curso 003
+<br>Profesor: Carlos Fontela
+<br>Ayudante: Sergio Pap
+<p>Trabajo Pr&nbsp;ctico:
+<br>&nbsp;Implementaci&cent;n de Ajedrez: Jaque al Rey
+<p>Archivo: chess.cpp
+<p>Grupo:14&nbsp;&nbsp; Fontdevila Diego 74169&nbsp; dfontde@fi.uba.ar
+<br>&nbsp;&nbsp;&nbsp; Deccico Adri&aacute;n&nbsp;&nbsp; 75223&nbsp; deccico@geocities.com
+<p>Descripci&cent;n:
+<br>&nbsp;El trabajo tiene por finalidad la implementaci&oacute;n de una
+<br>&nbsp;aplicaci&cent;n que permita a dos jugadores jugar interactivamente
+al
+<br>&nbsp;ajedrez contra la computadora. La computadora realizar&nbsp;
+la
+<br>&nbsp;supervisi&cent;n de la partida, convalidar&nbsp; las jugadas
+de cada jugador
+<br>&nbsp;y permitir&nbsp; administrar las partidas.
+<p>Entorno: Djgppp. IDE Rhide 1.4
+<p>Segunda Entrega - (Implemetaci&oacute;n de Jaque, Mate, Coronaci&oacute;n
+y enroque)
+<br>*******************************************************************/
+<br>&nbsp;
+<p>#include &lt;fstream>&nbsp; //incluye a iostream
+<br>#include &lt;conio>&nbsp;&nbsp;&nbsp; //la funcion gotoxy
+<br>#include &lt;ctype>
+<br>#include &lt;string>
+<p>#include "str.h"
+<br>#include "tablero.h"
+<br>#include "ejercito.h"
+<br>#include "partida.h"
+<br>#include "pieza.h"
+<p>using std::string;
+<br>using namespace std;
+<p>//Imprimir opciones
+<br>void ImprimirOpciones()
+<br>{
+<br>&nbsp; cout &lt;&lt;" Ingrese su movida&nbsp;&nbsp; o elija&nbsp; 1
+Nuevo Juego&nbsp; 2 Abrir&nbsp; 3 Guardar&nbsp; 0 para salir\n";
+<br>&nbsp; cout &lt;&lt;" ej: 'a1-a2'\n";
+<br>&nbsp; gotoxy(1,23);
+<br>&nbsp; cout &lt;&lt;"\nIngrese su opcion: ";
+<br>}
+<br>&nbsp;
+<p>//imprime el tablero
+<br>//y avisa si la movida es inv&aacute;lida, hay jaque o mate
+<br>void Imprimir (cPartida &amp;oPartida, int nEstado=0)
+<br>{
+<br>&nbsp; clrscr();
+<br>&nbsp; gotoxy(20,1);
+<br>&nbsp; cout &lt;&lt;"&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;\n";
+<br>&nbsp; gotoxy(20,2);
+<br>&nbsp; cout &lt;&lt;"&Ucirc;cJUEGO de oAJEDREZ&Ucirc;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+versi&cent;n 1.0\n";
+<br>&nbsp; gotoxy(20,3);
+<br>&nbsp; cout &lt;&lt;"&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;&Ucirc;\n";
+<br>&nbsp; gotoxy(5,7);
+<p>&nbsp; oPartida.mImprimir(); //dibuja el tablero
+<br>&nbsp; cout &lt;&lt; endl;
+<br>&nbsp; gotoxy(10,18);
+<p>&nbsp; switch (nEstado)
+<br>&nbsp; {
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 4:&nbsp; //pieza clavada
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;" Movida inv&nbsp;lida. Las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; (oPartida.mMueven() == 'b' ? "blancas" : "negras");
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; " quedar&iexcl;an en Jaque\n";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,19);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"&nbsp;&nbsp;&nbsp; Juegan las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;(oPartida.mMueven() == 'b' ? "blancas" : "negras")&lt;&lt;"\n\n";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ImprimirOpciones();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+break;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 3:&nbsp; //jaque mate
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;" Las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; (oPartida.mMueven() == 'b' ? "negras" : "blancas");
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; " han dado Jaque Mate";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+break;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 2:&nbsp; //jaque
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;" Las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; (oPartida.mMueven() == 'b' ? "blancas" : "negras");
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; " se encuentran en Jaque\n ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,19);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"&nbsp;&nbsp;&nbsp; Juegan las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;(oPartida.mMueven() == 'b' ? "blancas" : "negras")&lt;&lt;"\n\n";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ImprimirOpciones();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+break;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 1:&nbsp; //movida invalida
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt; " Movida inv&nbsp;lida ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,19);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"&nbsp;&nbsp;&nbsp; Juegan las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;(oPartida.mMueven() == 'b' ? "blancas" : "negras")&lt;&lt;"\n\n";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ImprimirOpciones();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+break;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 0:&nbsp; //movida normal
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,19);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"&nbsp;&nbsp;&nbsp; Juegan las ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;(oPartida.mMueven() == 'b' ? "blancas" : "negras")&lt;&lt;"\n\n";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ImprimirOpciones();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+break;
+<br>&nbsp;&nbsp; }
+<p>} //fin Imprimir
+<br>&nbsp;
+<p>//Ingreso de la movida por parte del usuario
+<br>//realizando la validaci&oacute;n de la misma
+<br>string Input(cPartida &amp;oPartida, int nEstado)
+<br>{
+<br>&nbsp;&nbsp; bool lvale;
+<br>&nbsp;&nbsp; string sOpcion=" ";
+<br>&nbsp;&nbsp; int nOpcion;
+<p>&nbsp;&nbsp; do&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+//validaci&cent;n del ingreso del usuario
+<br>&nbsp;&nbsp;&nbsp; {
+<br>&nbsp;&nbsp;&nbsp;&nbsp; Imprimir(oPartida,nEstado);
+<br>&nbsp;&nbsp;&nbsp;&nbsp; lvale=false;
+<p>&nbsp;&nbsp;&nbsp;&nbsp; cin >> sOpcion;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion= Minuscula(sOpcion);
+<p>&nbsp;/*
+<br>&nbsp;&nbsp;&nbsp;&nbsp; // para debuggear en bc++5.0, no acepta cin
+de strings
+<br>&nbsp;&nbsp;&nbsp;&nbsp; string s1="b1-c3",s2="d7-d5",
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s3="e2-e4",s4="e7-e5",
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s5="f1-c4",s6="b8-c6",
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s7="e1,g1";
+<br>&nbsp;&nbsp;&nbsp;&nbsp; static int i=1;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 1)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s1;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 2)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s2;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 3)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s3;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 4)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s4;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 5)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s5;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 6)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s6;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (i == 7)
+<br>&nbsp;&nbsp;&nbsp;&nbsp; sOpcion=s7;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; i++;
+<br>&nbsp;*/
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //*********VALIDACION
+DEL INPUT
+<br>&nbsp;&nbsp;&nbsp;&nbsp; //if que chequea que el caracter ingresado
+sea 1, 2, o 3
+<br>&nbsp;&nbsp;&nbsp;&nbsp; //en caso de que sea un ingreso de longitud
+1
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if ( sOpcion.length()==1 &amp;&amp; sOpcion
+>= "0" &amp;&amp; sOpcion &lt;= "3")
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lvale=true;
+<p>&nbsp;&nbsp;&nbsp;&nbsp; //if que chequea que el caracter 1&ordm; y
+4&ordm; sean letras y el 2do y 5to n&uacute;meros
+<br>&nbsp;&nbsp;&nbsp;&nbsp; //en caso de que sea un ingreso de longitud
+mayor a 4
+<br>&nbsp;&nbsp;&nbsp;&nbsp; if (sOpcion.length() >4 &amp;&amp; ( sOpcion[0]
+&lt;= 'h' &amp;&amp; sOpcion[0] >= 'a'
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; sOpcion[3]
+&lt;= 'h' &amp;&amp; sOpcion[3] >= 'a'&nbsp; &amp;&amp; sOpcion[1] &lt;=
+'8'
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; sOpcion[1]
+>= '1' &amp;&amp; sOpcion[4] &lt;= '8'&nbsp; &amp;&amp; sOpcion[4] >= '1')
+)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lvale=true;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+//*********FIN VALIDACION DEL INPUT
+<br>&nbsp;&nbsp;&nbsp;&nbsp; }while (!lvale);
+<br>&nbsp;&nbsp;&nbsp; //fin do..while
+<br>&nbsp;&nbsp;&nbsp; return sOpcion;
+<br>}//fin Input
+<br>&nbsp;
+<p>//Maneja la interface con el usuario
+<br>//pre inicialicar un objeto partida
+<br>//post devuelve 0 si se eligi&oacute; salir, 2 en caso de mate&nbsp;
+1 por default
+<br>int menu(cPartida &amp;oPartida )
+<br>{
+<br>&nbsp;int nEstado,nOpcion; //indica el estado de la partida. Jaque,
+Mate o jugada corriente
+<br>&nbsp;string sOpcion=" ",sNombre=" ",sC1=" ",sC2=" ",sName=" ";
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //chequeo de jaque y mate
+<br>&nbsp;if (oPartida.mHayJaque())
+<br>&nbsp;&nbsp; {&nbsp; if (oPartida.mHayMate())
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {Imprimir(oPartida,3);&nbsp;&nbsp;&nbsp;&nbsp;
+//imprimir mate
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 0;&nbsp;&nbsp;
+//salir
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nEstado=2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+//jaque
+<br>&nbsp;&nbsp;&nbsp; }
+<br>&nbsp;else nEstado=0;&nbsp;&nbsp;&nbsp; //Imprimir una movida normal
+<p>&nbsp;bool vale=false;
+<p>&nbsp;do&nbsp; //Input de la jugada, vertifica que sea valida, y la
+pieza no este clavada
+<br>&nbsp;{
+<br>&nbsp;&nbsp; sOpcion=Input(oPartida,nEstado);&nbsp;&nbsp;&nbsp; //Input
+de las pieza a mover
+<br>&nbsp;&nbsp; nOpcion=Entero(sOpcion);
+<br>&nbsp;&nbsp; if (sOpcion=="0")
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nOpcion=10;
+<br>&nbsp;&nbsp; switch (nOpcion)
+<br>&nbsp;&nbsp; {
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 10 :&nbsp; //salir
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return 0;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 1&nbsp; :&nbsp; //Nueva Partida
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+oPartida.mVaciar();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+oPartida.mCargar();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return 1;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 2&nbsp; :&nbsp; //Abrir partida
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,23);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"\nIngrese el nombre del archivo: ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cin >> sName;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+oPartida.mVaciar();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (!oPartida.mCargar(sName))
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ gotoxy(1,1);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"&nbsp; ERROR, no se ha hallado "&lt;&lt;sName;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+oPartida.mCargar();
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return 1;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 3&nbsp; :&nbsp; //Guardar partida
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+gotoxy(1,23);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cout &lt;&lt;"\nIngrese el nombre del archivo: ";
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cin >> sName;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+oPartida.mGuardar(sName);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return 1;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; case 0&nbsp; :&nbsp; //realizar la movida
+correspondiente
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sC1=sOpcion.substr(0,2); //casilla origen
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sC2=sOpcion.substr(3,2); //casilla destino
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (oPartida.mEsMovidaValida(sC1,sC2) )
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{if (oPartida.mEstaClavado(sC1,sC2))
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nEstado=4; //pieza clavada
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+else
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+vale=true;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+else
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nEstado=1; //movida no valida
+<br>&nbsp;&nbsp; }//fin switch
+<p>&nbsp;}while (!vale);
+<p>&nbsp;oPartida.mMover ( sC1,sC2 );
+<br>&nbsp;oPartida.mSiguienteMovida();
+<br>&nbsp;return 1;&nbsp; //sale pero indica al main que se repita el ciclo
+<p>}//fin menu
+<br>&nbsp;
+<p>//Funcion principal del programa
+<br>int main(int argc, char **argv)
+<br>{
+<br>&nbsp; bool conpiezas= argc == 1;
+<br>&nbsp; cPartida oPartida(conpiezas);
+<br>&nbsp; if ( !conpiezas )
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oPartida.mCargar();
+<br>&nbsp; int lOpcion;
+<p>&nbsp; do
+<br>&nbsp;&nbsp; {
+<br>&nbsp;&nbsp;&nbsp; lOpcion=menu(oPartida);
+<br>&nbsp;&nbsp; }
+<br>&nbsp; while (lOpcion==1);
+<br>&nbsp;
+<br>&nbsp; cout &lt;&lt; "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+GAME OVER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ";
+<br>}//fin main()
+<br>&nbsp;
+</body>
+</html>

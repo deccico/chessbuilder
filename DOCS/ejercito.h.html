@@ -1,0 +1,69 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win95; I) [Netscape]">
+   <title>clase cEjercito definicion</title>
+</head>
+<body>
+/*
+<br>Proyecto Ajedrez
+<br>archivo: ejercito.h
+<br>Grupo 14 -Deccico/Fontdevila&nbsp; ayudante JAvier MAcchi
+<br>contiene la implementaci&oacute;n de la clase cEjercito
+<br>*/
+<br>&nbsp;
+<p>//---------------------------------------------------------------------------
+<br>#ifndef _EJERCITO_H
+<br>#define _EJERCITO_H
+<br>&nbsp;
+<p>#include &lt;fstream>
+<br>#include "tablero.h"
+<p>class cEjercito
+<br>{
+<br>protected:
+<br>&nbsp;char mColor;
+<p>&nbsp;&nbsp;&nbsp; int actual;
+<p>&nbsp;&nbsp;&nbsp; cPieza* piezas[16];
+<p>&nbsp;cPieza *mSeleccionar();
+<p>&nbsp;&nbsp;&nbsp; bool mAgregarRey(cPieza*);
+<br>&nbsp;&nbsp;&nbsp; bool mAgregarDama(cPieza*);
+<br>&nbsp;&nbsp;&nbsp; bool mAgregarAlfil(cPieza*);
+<br>&nbsp;&nbsp;&nbsp; bool mAgregarCaballo(cPieza*);
+<br>&nbsp;&nbsp;&nbsp; bool mAgregarTorre(cPieza*);
+<br>&nbsp;&nbsp;&nbsp; bool mAgregarPeon(cPieza*);
+<p>public:
+<p>&nbsp;cEjercito(char color);
+<p>&nbsp;&nbsp;&nbsp; //Construye y agrega todas las piezas de un ejercito
+completo
+<br>&nbsp;&nbsp;&nbsp; void mArmar();
+<p>&nbsp;&nbsp;&nbsp; /*
+<br>&nbsp;&nbsp;&nbsp; Elimina todas sus referencias a pieza. No destruye
+las piezas.
+<br>&nbsp;&nbsp;&nbsp; Equivale a sacar todas las piezas.
+<br>&nbsp;&nbsp;&nbsp; Ver mSacarPieza().
+<br>&nbsp;&nbsp;&nbsp; */
+<br>&nbsp;&nbsp;&nbsp; void mDesbandar();
+<p>&nbsp;&nbsp;&nbsp; bool mAgregarPieza(cPieza*);
+<p>&nbsp;&nbsp;&nbsp; //Busca la pieza y pone esa pos. en NULL.
+<br>&nbsp;&nbsp;&nbsp; void mSacarPieza(cPieza*);
+<p>&nbsp;static cPieza* mCrearPieza(char simbolo,char color, int pos);
+<p>&nbsp;cRey* mObtenerRey()
+<br>&nbsp;{
+<br>&nbsp; return dynamic_cast&lt;cRey*>(piezas[4]);
+<br>&nbsp;}
+<p>&nbsp;cPieza* mPrimera();
+<p>&nbsp;&nbsp;&nbsp; cPieza* mSiguiente();
+<p>&nbsp;&nbsp;&nbsp; cPieza* mPonerPieza( cPieza* p, int i ) { piezas[i]=
+p;}
+<p>&nbsp;&nbsp;&nbsp; //Devuelve la pos. de la pieza, -1 si no la encuentra.
+<br>&nbsp;&nbsp;&nbsp; int mBuscarPieza( cPieza* p );
+<p>&nbsp;&nbsp;&nbsp; //Env&iacute;a al fstream o una l&iacute;nea por
+cada pieza, con el sig. formato:
+<br>&nbsp;&nbsp;&nbsp; // a1=Tb donde a1 es la pos. de una Torre blanca.
+<br>&nbsp;&nbsp;&nbsp; void cEjercito::mSerialize(ofstream&amp; o);
+<br>};
+<br>#endif
+<br>&nbsp;
+</body>
+</html>
